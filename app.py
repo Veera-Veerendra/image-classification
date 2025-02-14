@@ -1,7 +1,6 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import cv2
 from PIL import Image
 
 # Load the trained CIFAR-10 model
@@ -15,9 +14,11 @@ CLASS_NAMES = [
 
 # Function to preprocess the image
 def preprocess_image(image):
+    image = image.resize((32, 32))  # Resize to 32x32 using Pillow
     image = np.array(image)  # Convert PIL image to NumPy array
-    image = cv2.resize(image, (32, 32))  # Resize to 32x32 (CIFAR-10 size)
-    image = image.astype("float32") / 255.0  # Normalize
+    if image.shape[-1] == 4:  # Handle RGBA images by converting to RGB
+        image = image[:, :, :3]
+    image = image.astype("float32") / 255.0  # Normalize pixel values
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
 
